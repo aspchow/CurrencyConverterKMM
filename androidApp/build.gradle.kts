@@ -49,16 +49,21 @@ dependencies {
     implementation( "androidx.compose.foundation:foundation:1.2.1")
     // Material Design
     implementation ("androidx.compose.material:material:1.2.1")
-    // Material design icons
-    implementation ("androidx.compose.material:material-icons-core:1.2.1")
-    implementation ("androidx.compose.material:material-icons-extended:1.2.1")
-    // Integration with activities
+
     implementation ("androidx.activity:activity-compose:1.5.1")
-    // Integration with ViewModels
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
+
+    implementation ("androidx.navigation:navigation-compose:2.5.1")
+
+
+    //koin
+    val koinVersion = "3.2.0"
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-android:$koinVersion")
+
+
+
     // Integration with observables
     implementation ("androidx.compose.runtime:runtime-livedata:1.2.1")
-    implementation ("androidx.compose.runtime:runtime-rxjava2:1.2.1")
 
     implementation("androidx.activity:activity-ktx:1.5.1")
     implementation("com.google.android.material:material:1.4.0")

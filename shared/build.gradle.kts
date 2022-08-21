@@ -29,15 +29,29 @@ kotlin {
         val coroutinesVersion = "1.6.0-native-mt"
         val serializationVersion = "1.4.0"
         val ktorVersion = "2.1.0"
+        val koinVersion = "3.2.0"
 
 
         val commonMain by getting {
             dependencies {
 
-                implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+                //serialization
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
+
+                // Ktor
                 implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("io.ktor:ktor-client-logging:$ktorVersion")
                 implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+                implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+                implementation("org.slf4j:slf4j-simple:1.7.30")
+
+                //koin
+                implementation("io.insert-koin:koin-core:$koinVersion")
+
+
             }
         }
         val commonTest by getting {
@@ -47,7 +61,9 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation("io.ktor:ktor-client-android:$ktorVersion")
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+                implementation("io.insert-koin:koin-android:$koinVersion")
+
             }
         }
         val androidTest by getting
