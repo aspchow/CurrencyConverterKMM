@@ -1,5 +1,6 @@
 package com.avinash.currencyconverterkmm.repository.remote
 
+import com.avinash.currencyconverterkmm.getCurrentMilliseconds
 
 
 class ApiRefreshChecker {
@@ -9,6 +10,6 @@ class ApiRefreshChecker {
     }
 
     fun checkIfTimePassed(rateLmt: Long): Boolean {
-        return true//System.currentTimeMillis() >= rateLmt + API_CACHE_MILLISECONDS
+        return getCurrentMilliseconds() >= rateLmt + API_CACHE_MILLISECONDS
     }
 }

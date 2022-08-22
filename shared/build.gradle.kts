@@ -30,6 +30,7 @@ kotlin {
         val serializationVersion = "1.4.0"
         val ktorVersion = "2.1.0"
         val koinVersion = "3.2.0"
+        val preferenceVersion = "1.2.0"
 
 
         val commonMain by getting {
@@ -51,7 +52,12 @@ kotlin {
                 //koin
                 implementation("io.insert-koin:koin-core:$koinVersion")
 
+                //preference
+                implementation("com.russhwolf:multiplatform-settings:0.9")
 
+                //mockk
+                implementation("io.mockk:mockk:1.12.5")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
             }
         }
         val commonTest by getting {
@@ -63,6 +69,7 @@ kotlin {
             dependencies {
                 implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
                 implementation("io.insert-koin:koin-android:$koinVersion")
+
 
             }
         }

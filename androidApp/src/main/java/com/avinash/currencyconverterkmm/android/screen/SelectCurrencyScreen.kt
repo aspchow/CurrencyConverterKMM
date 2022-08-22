@@ -1,6 +1,5 @@
 package com.avinash.currencyconverterkmm.android.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.avinash.currencyconverterkmm.android.R
 import com.avinash.currencyconverterkmm.android.theme.*
-import com.avinash.currencyconverterkmm.repository.model.Currency
+import com.avinash.currencyconverterkmm.viewmodel.CurrencyValue
 import com.avinash.currencyconverterkmm.viewmodel.CurrencyViewModel
 
 @Composable
@@ -31,36 +30,45 @@ fun SelectCurrency(navController: NavController, viewModel: CurrencyViewModel) {
 
 
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
+    val availableCurrencies by viewModel.availableCurrencies.collectAsState(initial = emptyList())
+    val searchedCurrency by viewModel.searchedCurrency.collectAsState()
 
     SelectCurrencyView(selectedCurrency = selectedCurrency,
+        availableCurrencies = availableCurrencies,
         onRequestBack = {
             navController.popBackStack()
         },
         onCurrencySelected = { currency ->
             viewModel.setTheCurrency(currency = currency)
             navController.popBackStack()
-        })
+        },
+        searchQuery = searchedCurrency,
+        onSearchChange = viewModel::search)
 }
 
 
 @Preview
 @Composable
 fun SelectCurrencyViewPreview() {
-    SelectCurrencyView(selectedCurrency = Currency.INR,
+    SelectCurrencyView(selectedCurrency = CurrencyValue(),
+        availableCurrencies = emptyList(),
         onRequestBack = {
 
-        },
-        onCurrencySelected = {
+        }, {
+
+        }, "", {
 
         })
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SelectCurrencyView(
-    selectedCurrency: Currency,
+    selectedCurrency: CurrencyValue,
+    availableCurrencies: List<CurrencyValue>,
     onRequestBack: () -> Unit,
-    onCurrencySelected: (Currency) -> Unit
+    onCurrencySelected: (CurrencyValue) -> Unit,
+    searchQuery: String,
+    onSearchChange: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(), elevation = 10.dp, shape = RoundedCornerShape(8.dp)
@@ -77,13 +85,7 @@ private fun SelectCurrencyView(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            var searchQuery by remember {
-                mutableStateOf("")
-            }
-
-            SearchBox(searchText = searchQuery, onSearch = { query ->
-                searchQuery = query
-            })
+            SearchBox(searchText = searchQuery, onSearch = onSearchChange)
 
             LazyVerticalGrid(
                 modifier = Modifier
@@ -91,8 +93,8 @@ private fun SelectCurrencyView(
                     .height(400.dp),
                 columns = GridCells.Fixed(3),
                 content = {
-                    items(Currency.values().filter { currency ->
-                        currency != selectedCurrency && if (searchQuery.isEmpty()) true else currency.name.contains(
+                    items(availableCurrencies.filter { currency ->
+                        currency.name != selectedCurrency.name && if (searchQuery.isEmpty()) true else currency.name.contains(
                             searchQuery,
                             ignoreCase = true
                         )

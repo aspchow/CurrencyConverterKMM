@@ -1,5 +1,6 @@
 package com.avinash.currencyconverterkmm.di
 
+import com.avinash.currencyconverterkmm.platformModule
 import com.avinash.currencyconverterkmm.repository.Repository
 import com.avinash.currencyconverterkmm.repository.local.LocalDataSource
 import com.avinash.currencyconverterkmm.repository.remote.ApiRefreshChecker
@@ -13,7 +14,7 @@ import org.koin.dsl.module
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
-    modules(commonModule)
+    modules(commonModule, platformModule)
 }
 
 val commonModule = module {

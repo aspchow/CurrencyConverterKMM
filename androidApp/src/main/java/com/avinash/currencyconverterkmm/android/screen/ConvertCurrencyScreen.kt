@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.avinash.currencyconverterkmm.android.R
 import com.avinash.currencyconverterkmm.android.theme.*
-import com.avinash.currencyconverterkmm.repository.model.Currency
-import com.avinash.currencyconverterkmm.repository.model.Rate
+import com.avinash.currencyconverterkmm.viewmodel.CurrencyValue
 import com.avinash.currencyconverterkmm.viewmodel.CurrencyViewModel
 
 
@@ -57,7 +56,6 @@ fun ConvertCurrencyScreen(
         }
     })
 
-    val rate: Rate by viewModel.getCurrencyRate().collectAsState(initial = Rate.defaultRate())
     val selectedCurrency by viewModel.selectedCurrency.collectAsState()
     val availableCurrencies by viewModel.availableCurrencies.collectAsState(initial = emptyList())
     val searchedCurrency by viewModel.searchedCurrency.collectAsState()
@@ -77,12 +75,12 @@ fun ConvertCurrencyScreen(
                 price = it
             },
             currencies = availableCurrencies,
-            rate = rate,
             searchText = searchedCurrency,
             onSearch = { query ->
                 viewModel.search(query = query)
             }
         ) {
+            viewModel.search("")
             navController.navigate(Screen.SELECT_CURRENCY)
         }
 
@@ -99,12 +97,11 @@ fun CurrencyConverterPreview() {
         CurrencyConverterBackGround()
 
         CurrencyConverterView(
-            Currency.INR, "",
+            CurrencyValue(), "",
             {
 
             },
-            currencies = Currency.values().asList(),
-            Rate.defaultRate(),
+            currencies = listOf(),
             "",
             {
 
@@ -120,11 +117,10 @@ fun CurrencyConverterPreview() {
 
 @Composable
 private fun CurrencyConverterView(
-    selectedCurrency: Currency,
+    selectedCurrency: CurrencyValue,
     priceValue: String,
     onPriceChange: (String) -> Unit,
-    currencies: List<Currency>,
-    rate: Rate,
+    currencies: List<CurrencyValue>,
     searchText: String,
     onSearch: (String) -> Unit,
     onCurrencyChangeRequest: () -> Unit,
@@ -150,7 +146,6 @@ private fun CurrencyConverterView(
 
         CurrencyConversionSection(
             currencies = currencies,
-            rate = rate,
             selectedCurrency = selectedCurrency,
             price = priceValue,
             searchText = searchText,
@@ -162,9 +157,8 @@ private fun CurrencyConverterView(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CurrencyConversionSection(
-    currencies: List<Currency>,
-    rate: Rate,
-    selectedCurrency: Currency,
+    currencies: List<CurrencyValue>,
+    selectedCurrency: CurrencyValue,
     price: String,
     searchText: String,
     onSearch: (String) -> Unit,
@@ -198,42 +192,41 @@ fun CurrencyConversionSection(
                         ) {
 
 
-                                Text(
-                                    text = currency.name,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    style = fontRegular.copy(
-                                        color = textColor,
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.W600,
-                                        textAlign = TextAlign.Center
-                                    )
+                            Text(
+                                text = currency.name,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = fontRegular.copy(
+                                    color = textColor,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.W600,
+                                    textAlign = TextAlign.Center
                                 )
+                            )
 
 
-                                Text(
-                                    text = " (rate :- 1 ${selectedCurrency.name} = ${
-                                        (rate.getRateFor(currency) / rate.getRateFor(
-                                            selectedCurrency
-                                        )).roundOff()
-                                    } ${currency.name} )",
-                                    style = fontRegular.copy(
-                                        color = textColor,
-                                        fontSize = 10.sp,
-                                    )
+                            Text(
+                                text = " (rate :- 1 ${selectedCurrency.name} = ${
+                                    (currency.value /
+                                            selectedCurrency.value).roundOff()
+                                } ${currency.name} )",
+                                style = fontRegular.copy(
+                                    color = textColor,
+                                    fontSize = 10.sp,
                                 )
+                            )
 
-                                Text(
-                                    text = ((rate.getRateFor(currency) / rate.getRateFor(
-                                        selectedCurrency
-                                    )) * price.safeDouble()).roundOff().toString(),
-                                    style = fontRegular.copy(
-                                        color = textColor,
-                                        fontSize = 13.sp,
-                                    )
+                            Text(
+                                text = ((currency.value /
+                                        selectedCurrency.value) * price.safeDouble()).roundOff()
+                                    .toString(),
+                                style = fontRegular.copy(
+                                    color = textColor,
+                                    fontSize = 13.sp,
                                 )
-                            }
+                            )
                         }
                     }
+                }
             },
             horizontalArrangement = Arrangement.Center,
         )
@@ -243,7 +236,7 @@ fun CurrencyConversionSection(
 
 @Composable
 private fun SelectedCurrency(
-    selectedCurrency: Currency,
+    selectedCurrency: CurrencyValue,
     priceValue: String,
     onPriceChange: (String) -> Unit,
     onCurrencyChangeRequest: () -> Unit,
